@@ -268,4 +268,82 @@ $ R
 # Create two files, 1. wrapper-type script that feeds input into R and 2. batch command script to execute job.
 # call_cibersort.R will take the batch command script and feed it into CIBERSORT.R
 
+$ vi "call_cibersort.R"
 
+# Paste in the following code:
+
+#### START ####
+
+args <- commandArgs(trailingOnly = TRUE)
+print(args)
+
+class(args)
+
+n <- length(args)
+
+if ( n < 3){
+	print("Please provide two input files and the number of permutations")
+	stop("Did not get enough arguments, exiting...")
+}
+
+# check whether files exists:
+for (i in 1:(n-1)) {
+	if(!file.exists(args[i])){
+		print("File ",args[i],"does not exist in the current directory")
+		stop("No valid file given. Exiting!")	
+	}
+}
+
+if(is.na(as.integer(args[n]))){
+	print("Last argument must be an integer number")
+	stop("No valid number of permutations given. Exiting!")
+}
+
+source("CIBERSORT.R")
+CIBERSORT(args[1],args[2],perm=as.integer(args[3]))
+
+#### END ####
+
+[esc] :wq
+
+# create the batch job submission file.
+
+$ vi "submit_cibersort.cmd"
+
+#### START ####
+
+#!/bin/bash
+#$ -cwd
+#$ -o  joblog.$JOB_ID
+#$ -j y
+#  Resources requested:
+#$ -l h_data=32g,h_rt=6:00:00
+#  Email address to notify
+#$ -M $USER@mail
+#$ -m bea
+
+  echo ""
+  echo "test started on:   "` hostname -s `
+  echo "test started at:   "` date `
+  echo ""
+#
+  . /u/local/Modules/default/init/modules.sh
+  module load R
+  
+
+#
+# Run the user program
+#
+ 
+R CMD BATCH --no-save --no-restore "input1.txt input2.txt 500" ./call_cibersort.R cibersort.out.${JOB_ID}
+
+#### END ####
+
+[esc] :wq
+
+# User can modify the signature file (input1.txt) and mixed sample file (input2.txt).
+# "Call" and "Submit" files can be tweaked to change more options from default.
+
+# Finally, user is able to run CIBERSORT with the folowwing command.
+
+$ qsub "submit_cibersort.cmd"
