@@ -1,0 +1,23 @@
+# install packages and check
+
+devtools::install_github("GfellerLab/EPIC")
+library("EPIC")
+library("devtools")
+
+## The main function in this package is `EPIC`. It needs as input a matrix of the TPM (or RPKM) gene expression from the samples for which to estimate cell proportions. One can also define the reference cells to use
+
+``` r
+out <- EPIC(bulk = bulkSamplesMatrix)
+out <- EPIC(bulk = bulkSamplesMatrix, reference = referenceCellsList)
+```
+
+`out` is a list containing the various mRNA and cell fractions in each samples as well as some *data.frame* of the goodness of fit.
+
+Values of mRNA per cell and signature genes to use can also be changed:
+
+``` r
+out <- EPIC(bulk = bulkSamplesMatrix, reference = referenceCellsList, mRNA_cell = mRNA_cell_vector, sigGenes = sigGenes_vector)
+out <- EPIC(bulk = bulkSamplesMatrix, reference = referenceCellsList, mRNA_cell_sub = mRNA_cell_sub_vector)
+```
+
+### Working on integrating these alternate functions into code itself so that it can be included in the wrapper and queue submission simultaneously.
