@@ -1,2 +1,3 @@
-# benchmarking-shou
-# for CIBERSORT
+# Benjamin Shou
+# Pellegrini Lab at UCLA
+# Benchmarking Deconvolution Paper
